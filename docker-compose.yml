@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+
+  redis:
+    image: redis:7.0.11-alpine
+
+  api:
+    container_name: api
+    build:
+      context: ./backend
+    command: python manage.py  runserver 0.0.0.0:8000
+    tty: true
+    volumes:
+      - ./backend:/usr/src/app/
+    ports: 
+      - 8000:8000
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-_zpyn%g+$5t#m_v18p^h^u8xssj%o$617_7r!4pch+^dc4u763
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    depends_on:
+      - redis
+
+  celery:
+    container_name: celery
+    build:
+      context: ./backend
+    command: celery -A config worker -l INFO
+    volumes:
+      - ./backend:/usr/src/app/
+    ports:
+      - 49267:49267
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-_zpyn%g+$5t#m_v18p^h^u8xssj%o$617_7r!4pch+^dc4u763
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    depends_on:
+      - redis
+      - api
