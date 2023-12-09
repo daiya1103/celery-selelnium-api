@@ -13,6 +13,13 @@ from scrape.models import (
     Recipe,
     Keyword,
     Common,
+    Ngword,
+    Exclusion,
+    Delete,
+    Replace,
+    Margin,
+    DefaultMargin,
+    ResearchResult,
 )
 
 
@@ -57,11 +64,6 @@ class PaypaySerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(WritableNestedModelSerializer):
-    amazon = AmazonSerializer()
-    mercari = MercariSerializer()
-    amazon = AmazonSerializer()
-    amazon = AmazonSerializer()
-
     class Meta:
         model = get_user_model()
         fields = "__all__"
@@ -82,11 +84,6 @@ class KeywordSerializer(WritableNestedModelSerializer):
             "category_1",
             "category_2",
             "search_amount",
-            "second_keyword_1",
-            "second_keyword_2",
-            "second_keyword_3",
-            "second_keyword_4",
-            "second_keyword_5",
             "row",
         )
         extra_kwargs = {
@@ -96,11 +93,6 @@ class KeywordSerializer(WritableNestedModelSerializer):
             "category_1": {"required": False},
             "category_2": {"required": False},
             "search_amount": {"required": False},
-            "second_keyword_1": {"required": False},
-            "second_keyword_2": {"required": False},
-            "second_keyword_3": {"required": False},
-            "second_keyword_4": {"required": False},
-            "second_keyword_5": {"required": False},
         }
 
 
@@ -126,3 +118,114 @@ class CommonSettingSerializer(serializers.ModelSerializer):
         model = Common
         fields = "__all__"
         extra_keywargs = {"user": {"read_only": True}}
+
+
+class NgwordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ngword
+        fields = "__all__"
+        extra_keywargs = {"user": {"read_only": True}}
+
+
+class ExclusionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exclusion
+        fields = "__all__"
+        extra_keywargs = {"user": {"read_only": True}}
+
+
+class DeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Delete
+        fields = "__all__"
+        extra_keywargs = {"user": {"read_only": True}}
+
+
+class ReplaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Replace
+        fields = "__all__"
+        extra_keywargs = {"user": {"read_only": True}}
+
+
+class DefaultMarginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DefaultMargin
+        fields = "__all__"
+        extra_keywargs = {"user": {"read_only": True}}
+
+
+class MarginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Margin
+        fields = "__all__"
+        extra_keywargs = {"user": {"read_only": True}}
+
+
+class NgSettingSerializer(WritableNestedModelSerializer):
+    ngwords = NgwordSerializer(many=True)
+    exclusions = ExclusionSerializer(many=True)
+    deletes = DeleteSerializer(many=True)
+    replaces = ReplaceSerializer(many=True)
+    margins = MarginSerializer(many=True)
+    margin = DefaultMarginSerializer()
+    amazon = AmazonSerializer()
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "ngwords",
+            "exclusions",
+            "deletes",
+            "replaces",
+            "margins",
+            "margin",
+            "amazon",
+        )
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "mercari": {"read_only": True},
+        }
+
+
+class MainInfomationSerializer(WritableNestedModelSerializer):
+    ngwords = NgwordSerializer(many=True)
+    exclusions = ExclusionSerializer(many=True)
+    deletes = DeleteSerializer(many=True)
+    replaces = ReplaceSerializer(many=True)
+    margins = MarginSerializer(many=True)
+    margin = DefaultMarginSerializer()
+    amazon = AmazonSerializer()
+    mercari = MercariSerializer()
+    recipes = RecipeSerializer(many=True)
+    common = CommonSettingSerializer()
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "ngwords",
+            "exclusions",
+            "deletes",
+            "replaces",
+            "margins",
+            "margin",
+            "amazon",
+            "mercari",
+            "recipes",
+            "common",
+        )
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "mercari": {"read_only": True},
+        }
+
+
+class ResearchResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResearchResult
+        fields = "__all__"
+        extra_kwargs = {
+            "product_img2": {"required": False},
+            "product_img3": {"required": False},
+        }

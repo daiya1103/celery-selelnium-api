@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class UserCreatePermission(permissions.BasePermission):
+class StaffPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_staff
 

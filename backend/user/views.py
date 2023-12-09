@@ -9,6 +9,15 @@ from .serializers import (
     YahooSerializer,
     PaypaySerializer,
     RakumaSerializer,
+    NgSettingSerializer,
+    MainInfomationSerializer,
+    NgwordSerializer,
+    ReplaceSerializer,
+    ExclusionSerializer,
+    DeleteSerializer,
+    AmazonSerializer,
+    MarginSerializer,
+    DefaultMarginSerializer,
 )
 from scrape.models import (
     Amazon,
@@ -19,8 +28,15 @@ from scrape.models import (
     Recipe,
     Keyword,
     Common,
+    Ngword,
+    Replace,
+    Exclusion,
+    Delete,
 )
-from .custom_permissions import UserPermission, KeywordPermission
+from django.contrib.auth import get_user_model
+
+from .custom_permissions import UserPermission, KeywordPermission, StaffPermission
+from rest_framework.permissions import AllowAny
 
 from rest_framework.generics import (
     CreateAPIView,
@@ -41,12 +57,25 @@ from rest_framework import status
 
 class UserCreateView(CreateAPIView):
     serializer_class = UserCreationSerializer
+    permission_classes = (AllowAny,)
 
 
 class UserView(APIView):
     def get(self, request):
         user = request.user
         serializer = UserSerializer(user)
+        data = serializer.data
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class NgSettingView(APIView):
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get(self, request):
+        user = request.user
+        serializer = NgSettingSerializer(user)
         data = serializer.data
 
         return Response(data, status=status.HTTP_200_OK)
@@ -89,6 +118,21 @@ class CommonViewSet(ModelViewSet):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AmazonViewSet(ModelViewSet):
+    serializer_class = AmazonSerializer
+    queryset = Amazon.objects.all()
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Amazon.objects.filter(user=user)
+
+    def destroy(self, request, *args, **kwargs):
+        response = {"message": "設定は削除できません"}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
 class MercariViewSet(ModelViewSet):
     serializer_class = MercariSerializer
     queryset = Mercari.objects.all()
@@ -102,3 +146,106 @@ class MercariViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         response = {"message": "設定は削除できません"}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NgSettingView(APIView):
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get(self, request):
+        user = request.user
+        serializer = MainInfomationSerializer(user)
+        data = serializer.data
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class NgWordViewSet(ModelViewSet):
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = Ngword.objects.all()
+    serializer_class = NgwordSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data["user"] = self.request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExculsionViewSet(ModelViewSet):
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = Exclusion.objects.all()
+    serializer_class = ExclusionSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data["user"] = self.request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReplaceViewSet(ModelViewSet):
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = Replace.objects.all()
+    serializer_class = ReplaceSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data["user"] = self.request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteViewSet(ModelViewSet):
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = Delete.objects.all()
+    serializer_class = DeleteSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data["user"] = self.request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserViewSet(ModelViewSet):
+    permission_classes = (StaffPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = get_user_model().objects.all()
+    serializer_class = UserCreationSerializer

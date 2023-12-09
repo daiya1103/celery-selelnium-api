@@ -15,27 +15,87 @@ class Amazon(models.Model):
 
     amount = models.PositiveIntegerField(default=2)
 
-    brand_name = models.CharField(max_length=255, default="ノーブランド")
+    brand_name = models.CharField(max_length=255, default="ノーブランド品")
 
-    maker = models.CharField(max_length=255, default="ノーブランド")
+    maker = models.CharField(max_length=255, default="ノーブランド品")
 
     type_of_product = models.CharField(max_length=255, default="Hobbies")
 
     contidion_of_product = models.CharField(max_length=255, default="新品")
 
-    browse_node = models.PositiveIntegerField(default=2189388051)
+    browse_node = models.PositiveIntegerField(default=3113755051)
 
     random_charactor = models.PositiveIntegerField(default=1)
 
     prefix = models.CharField(max_length=255, default="")
 
-    csv_bool = models.BooleanField(default=False, verbose_name="リサーチ完了後、csvを出力する")
 
-    get_bool = models.BooleanField(default=False, verbose_name="リサーチ完了後、そのまま商品情報を取得する")
-
-    csv_bool = models.BooleanField(
-        default=False, verbose_name="第1キーワードを含まない商品を検索結果から除外する"
+class Ngword(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="ngwords"
     )
+
+    row = models.PositiveIntegerField()
+
+    value = models.CharField(max_length=255)
+
+
+class Exclusion(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="exclusions"
+    )
+
+    row = models.PositiveIntegerField()
+
+    value = models.CharField(max_length=255)
+
+
+class Replace(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="replaces"
+    )
+
+    row = models.PositiveIntegerField()
+
+    before = models.CharField(max_length=255)
+
+    after = models.CharField(max_length=255)
+
+
+class Delete(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="deletes"
+    )
+
+    row = models.PositiveIntegerField()
+
+    value = models.CharField(max_length=255)
+
+
+class DefaultMargin(models.Model):
+    user = models.OneToOneField(
+        get_user_model(), on_delete=models.CASCADE, related_name="margin"
+    )
+
+    bool = models.BooleanField(default=True)
+
+    margin = models.PositiveIntegerField(blank=True, null=True)
+
+    delivery = models.PositiveIntegerField(blank=True, null=True)
+
+
+class Margin(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="margins"
+    )
+
+    min_price = models.PositiveIntegerField(blank=True, null=True)
+
+    max_price = models.PositiveIntegerField(blank=True, null=True)
+
+    margin = models.PositiveIntegerField(blank=True, null=True)
+
+    row = models.PositiveIntegerField(blank=True, null=True)
 
 
 class Mercari(models.Model):
@@ -64,7 +124,7 @@ class Mercari(models.Model):
     # 全体的に状態が悪い
     condition_bad = models.BooleanField(default=False)
 
-    order = models.CharField(max_length=255, default="すべて")
+    order = models.CharField(max_length=255, default="おすすめ順")
 
     on_sale = models.BooleanField(default=False)
 
@@ -182,7 +242,9 @@ class Recipe(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="recipes"
     )
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, default="タイトルなし")
+
+    num = models.PositiveIntegerField()
 
 
 class Keyword(models.Model):
@@ -202,24 +264,26 @@ class Keyword(models.Model):
 
     category_2 = models.CharField(default="", max_length=255)
 
-    second_keyword_1 = models.CharField(
-        default="", max_length=255, null=True, blank=True
-    )
-
-    second_keyword_2 = models.CharField(
-        default="", max_length=255, null=True, blank=True
-    )
-
-    second_keyword_3 = models.CharField(
-        default="", max_length=255, null=True, blank=True
-    )
-
-    second_keyword_4 = models.CharField(
-        default="", max_length=255, null=True, blank=True
-    )
-
-    second_keyword_5 = models.CharField(
-        default="", max_length=255, null=True, blank=True
-    )
-
     search_amount = models.PositiveIntegerField(default=50)
+
+
+class ResearchResult(models.Model):
+    product_img1 = models.URLField()
+
+    product_img2 = models.URLField(null=True, blank=True)
+
+    product_img3 = models.URLField(null=True, blank=True)
+
+    url = models.URLField()
+
+    product_name = models.CharField(max_length=255)
+
+    seller_id = models.CharField(max_length=255)
+
+    product_price = models.PositiveIntegerField()
+
+    condition = models.CharField(max_length=255)
+
+    sell_status = models.CharField(max_length=255)
+
+    task_id = models.CharField(max_length=255)

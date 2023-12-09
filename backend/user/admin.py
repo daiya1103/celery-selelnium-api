@@ -11,6 +11,12 @@ from scrape.models import (
     Recipe,
     Keyword,
     Common,
+    Delete,
+    Replace,
+    Ngword,
+    Exclusion,
+    DefaultMargin,
+    Margin,
 )
 
 
@@ -30,7 +36,7 @@ class UserAdmin(BaseUserAdmin):
                 )
             },
         ),
-        ("Important dates", {"fields": ("last_login",)}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
         (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
@@ -46,3 +52,9 @@ admin.site.register(Paypay)
 admin.site.register(Recipe)
 admin.site.register(Keyword)
 admin.site.register(Common)
+admin.site.register(Ngword)
+admin.site.register(Exclusion)
+admin.site.register(Delete)
+admin.site.register(Replace)
+admin.site.register(DefaultMargin)
+admin.site.register(Margin)

@@ -29,8 +29,6 @@ services:
     command: celery -A config worker -l INFO
     volumes:
       - ./backend:/usr/src/app/
-    ports:
-      - 49267:49267
     environment:
       - DEBUG=1
       - SECRET_KEY=django-insecure-_zpyn%g+$5t#m_v18p^h^u8xssj%o$617_7r!4pch+^dc4u763
