@@ -39,6 +39,11 @@ class Ngword(models.Model):
 
     value = models.CharField(max_length=255)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "row"], name="ngword_unique"),
+        ]
+
 
 class Exclusion(models.Model):
     user = models.ForeignKey(
@@ -48,6 +53,11 @@ class Exclusion(models.Model):
     row = models.PositiveIntegerField()
 
     value = models.CharField(max_length=255)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "row"], name="exclusion_unique"),
+        ]
 
 
 class Replace(models.Model):
@@ -61,6 +71,11 @@ class Replace(models.Model):
 
     after = models.CharField(max_length=255)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "row"], name="replace_unique"),
+        ]
+
 
 class Delete(models.Model):
     user = models.ForeignKey(
@@ -71,6 +86,11 @@ class Delete(models.Model):
 
     value = models.CharField(max_length=255)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "row"], name="delete_unique"),
+        ]
+
 
 class DefaultMargin(models.Model):
     user = models.OneToOneField(
@@ -79,9 +99,9 @@ class DefaultMargin(models.Model):
 
     bool = models.BooleanField(default=True)
 
-    margin = models.PositiveIntegerField(blank=True, null=True)
+    margin = models.PositiveIntegerField(default=35)
 
-    delivery = models.PositiveIntegerField(blank=True, null=True)
+    delivery = models.PositiveIntegerField(default=500)
 
 
 class Margin(models.Model):
@@ -96,6 +116,11 @@ class Margin(models.Model):
     margin = models.PositiveIntegerField(blank=True, null=True)
 
     row = models.PositiveIntegerField(blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "row"], name="margin_unique"),
+        ]
 
 
 class Mercari(models.Model):
@@ -262,9 +287,14 @@ class Keyword(models.Model):
 
     category_1 = models.CharField(default="", max_length=255)
 
-    category_2 = models.CharField(default="", max_length=255)
+    category_2 = models.CharField(blank=True, null=True, default="", max_length=255)
 
     search_amount = models.PositiveIntegerField(default=50)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["row", "recipe"], name="keyword_unique"),
+        ]
 
 
 class ResearchResult(models.Model):

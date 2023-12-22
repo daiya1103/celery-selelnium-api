@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -31,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=100, default="匿名")
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateField()
+    date_joined = models.DateField(auto_now_add=True)
 
     objects = UserManager()
 
@@ -57,6 +58,8 @@ def create_onetoone(sender, **kwargs):
             Recipe,
             Keyword,
             Common,
+            DefaultMargin,
+            Margin
         )
 
         Amazon.objects.create(user=kwargs["instance"])
@@ -65,5 +68,6 @@ def create_onetoone(sender, **kwargs):
         Rakuma.objects.create(user=kwargs["instance"])
         Paypay.objects.create(user=kwargs["instance"])
         Common.objects.create(user=kwargs["instance"])
+        DefaultMargin.objects.create(user=kwargs["instance"])
         for i in range(1, 20):
             Recipe.objects.create(user=kwargs["instance"], num=i)

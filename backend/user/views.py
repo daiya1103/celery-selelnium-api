@@ -32,6 +32,8 @@ from scrape.models import (
     Replace,
     Exclusion,
     Delete,
+    DefaultMargin,
+    Margin
 )
 from django.contrib.auth import get_user_model
 
@@ -148,6 +150,21 @@ class MercariViewSet(ModelViewSet):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
+class YahooViewSet(ModelViewSet):
+    serializer_class = YahooSerializer
+    queryset = Yahoo.objects.all()
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Yahoo.objects.filter(user=user)
+
+    def destroy(self, request, *args, **kwargs):
+        response = {"message": "設定は削除できません"}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
 class NgSettingView(APIView):
     permission_classes = (UserPermission,)
     authentication_classes = (JWTAuthentication,)
@@ -249,3 +266,42 @@ class UserViewSet(ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     queryset = get_user_model().objects.all()
     serializer_class = UserCreationSerializer
+
+
+class DefaultMarginViewSet(ModelViewSet):
+    permission_classes = (StaffPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = DefaultMargin.objects.all()
+    serializer_class = DefaultMarginSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return DefaultMargin.objects.filter(user=user)
+
+    def destroy(self, request, *args, **kwargs):
+        response = {"message": "設定は削除できません"}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+class MarginViewSet(ModelViewSet):
+    permission_classes = (StaffPermission,)
+    authentication_classes = (JWTAuthentication,)
+    queryset = Margin.objects.all()
+    serializer_class = MarginSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Margin.objects.filter(user=user)
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data["user"] = self.request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -159,7 +159,7 @@ class MarginSerializer(serializers.ModelSerializer):
     class Meta:
         model = Margin
         fields = "__all__"
-        extra_keywargs = {"user": {"read_only": True}}
+        extra_keywargs = {"user": {"read_only": True}, 'max_price': {'required': False}}
 
 
 class NgSettingSerializer(WritableNestedModelSerializer):
@@ -198,6 +198,7 @@ class MainInfomationSerializer(WritableNestedModelSerializer):
     margin = DefaultMarginSerializer()
     amazon = AmazonSerializer()
     mercari = MercariSerializer()
+    yahoo = YahooSerializer()
     recipes = RecipeSerializer(many=True)
     common = CommonSettingSerializer()
 
@@ -214,6 +215,7 @@ class MainInfomationSerializer(WritableNestedModelSerializer):
             "mercari",
             "recipes",
             "common",
+            "yahoo",
         )
         extra_kwargs = {
             "password": {"write_only": True},
