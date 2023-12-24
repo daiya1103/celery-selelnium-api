@@ -9,12 +9,12 @@ services:
     container_name: api
     build:
       context: ./backend
-    command: python manage.py  runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     tty: true
     volumes:
       - ./backend:/usr/src/app/
     ports: 
-      - 8000:8000
+      - 80:8000
     environment:
       - DEBUG=1
       - SECRET_KEY=django-insecure-_zpyn%g+$5t#m_v18p^h^u8xssj%o$617_7r!4pch+^dc4u763
