@@ -32,6 +32,7 @@ services:
       options:
         awslogs-region: ap-northeast-1
         awslogs-group: amazon-docker-logs
+        tag: api
 
   celery:
     container_name: celery
@@ -52,3 +53,13 @@ services:
       options:
         awslogs-region: ap-northeast-1
         awslogs-group: amazon-docker-logs
+        tag: celery
+
+  web:
+    container_name: web
+    build:
+      context: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - api
