@@ -4,35 +4,33 @@ services:
 
   redis:
     image: redis:7.0.11-alpine
-    logging:
-      driver: awslogs
-      options:
-        awslogs-region: ap-northeast-1
-        awslogs-group: amazon-docker-logs
-        tag: redis
+    # logging:
+    #   driver: awslogs
+    #   options:
+    #     awslogs-region: ap-northeast-1
+    #     awslogs-group: amazon-docker-logs
+    #     tag: redis
 
   api:
     container_name: api
+    image: gunicorn:20.1.0
     build:
       context: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
     tty: true
     volumes:
       - ./backend:/usr/src/app/
-    ports: 
-      - 8000:8000
     environment:
       - DEBUG=1
       - SECRET_KEY=django-insecure-_zpyn%g+$5t#m_v18p^h^u8xssj%o$617_7r!4pch+^dc4u763
       - ALLOWED_HOSTS=localhost,127.0.0.1
     depends_on:
       - redis
-    logging:
-      driver: awslogs
-      options:
-        awslogs-region: ap-northeast-1
-        awslogs-group: amazon-docker-logs
-        tag: api
+    # logging:
+    #   driver: awslogs
+    #   options:
+    #     awslogs-region: ap-northeast-1
+    #     awslogs-group: amazon-docker-logs
+    #     tag: api
 
   celery:
     container_name: celery
@@ -48,17 +46,19 @@ services:
     depends_on:
       - redis
       - api
-    logging:
-      driver: awslogs
-      options:
-        awslogs-region: ap-northeast-1
-        awslogs-group: amazon-docker-logs
-        tag: celery
+    # logging:
+    #   driver: awslogs
+    #   options:
+    #     awslogs-region: ap-northeast-1
+    #     awslogs-group: amazon-docker-logs
+    #     tag: celery
 
   web:
     container_name: web
     build:
       context: ./nginx
+      dockerfile: ./DockerFile
+    tty: true
     ports:
       - 80:80
     depends_on:

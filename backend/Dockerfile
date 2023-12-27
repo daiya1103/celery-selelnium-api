@@ -41,8 +41,6 @@ RUN apt-get update &&\
     netcat-traditional \
     && rm -rf /var/lib/apt/lists/*
 
-
-
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - &&\
     wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
     apt-get install -y ./google-chrome-stable_current_amd64.deb &&\
@@ -51,6 +49,7 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
 RUN pip install -U pip
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
+RUN mkdir -p /var/run/gunicorn
 
 COPY . /usr/src/app/
 
