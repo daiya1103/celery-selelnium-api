@@ -64,7 +64,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+CORS_ORIGIN_WHITELIST = ["https://main.d1e7mm4pq8ueem.amplifyapp.com"]
 
 TEMPLATES = [
     {
@@ -164,3 +164,10 @@ SIMPLE_JWT = {
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
 CELERY_TASK_TRACK_STARTED = True
+
+CSRF_TRUSTED_ORIGINS = ["https://amamuza.com"]
+
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
+CORS_ORIGIN_ALLOW_ALL = True

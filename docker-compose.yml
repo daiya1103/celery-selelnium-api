@@ -4,12 +4,12 @@ services:
 
   redis:
     image: redis:7.0.11-alpine
-    # logging:
-    #   driver: awslogs
-    #   options:
-    #     awslogs-region: ap-northeast-1
-    #     awslogs-group: amazon-docker-logs
-    #     tag: redis
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ap-northeast-1
+        awslogs-group: amazon-docker-logs
+        tag: redis
 
   api:
     container_name: api
@@ -27,11 +27,12 @@ services:
       - ALLOWED_HOSTS=localhost,127.0.0.1
     depends_on:
       - redis
-    # logging:
-    #   driver: awslogs
-    #   options:
-    #     awslogs-region: ap-northeast-1
-    #     awslogs-group: amazon-docker-logs
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ap-northeast-1
+        awslogs-group: amazon-docker-logs
+        tag: django
 
   celery:
     container_name: celery
@@ -47,8 +48,9 @@ services:
     depends_on:
       - redis
       - api
-    # logging:
-    #   driver: awslogs
-    #   options:
-    #     awslogs-region: ap-northeast-1
-    #     awslogs-group: amazon-docker-logs
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ap-northeast-1
+        awslogs-group: amazon-docker-logs
+        tag: celery
