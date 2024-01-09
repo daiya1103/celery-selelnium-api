@@ -6,3 +6,4 @@ __pycache__/
 db-volumes/
 db.sqlite3
 test.py
+docker-compose.dev.yml
