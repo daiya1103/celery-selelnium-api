@@ -187,7 +187,7 @@ class Yahoo(models.Model):
     # 全体的に状態が悪い
     condition_bad = models.BooleanField(default=False)
 
-    order = models.CharField(max_length=255, default="new")
+    order = models.CharField(max_length=255, default="新着順")
 
     status = models.CharField(max_length=255, default="販売中")
 
