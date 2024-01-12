@@ -136,18 +136,10 @@ def get_item_data(
                             'div[data-testid="price"] span:nth-of-type(2)',
                         ).text.replace(",", "")
                     )
-                    img_elms = driver.find_elements(
+                    product_img = driver.find_element(
                         By.CSS_SELECTOR,
                         ".sticky-outer-wrapper img",
-                    )[:3]
-                    img_list = []
-                    for img_elm in img_elms:
-                        img_list.append(img_elm.get_attribute("src"))
-                    while len(img_list) < 3:
-                        img_list.append("")
-                    product_img1 = img_list[0]
-                    product_img2 = img_list[1]
-                    product_img3 = img_list[2]
+                    ).get_attribute("src")
                     sell_status_elm = driver.find_element(
                         By.CSS_SELECTOR, "div[data-testid='image-0']"
                     )
@@ -158,9 +150,7 @@ def get_item_data(
                         By.CSS_SELECTOR, "span[data-testid='商品の状態']"
                     ).text
                     data = {
-                        "product_img1": product_img1,
-                        "product_img2": product_img2,
-                        "product_img3": product_img3,
+                        "product_img": product_img,
                         "url": url,
                         "product_name": product_name,
                         "seller_id": seller_id,

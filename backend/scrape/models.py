@@ -298,11 +298,7 @@ class Keyword(models.Model):
 
 
 class ResearchResult(models.Model):
-    product_img1 = models.URLField()
-
-    product_img2 = models.URLField(null=True, blank=True)
-
-    product_img3 = models.URLField(null=True, blank=True)
+    product_img = models.URLField()
 
     url = models.URLField()
 
