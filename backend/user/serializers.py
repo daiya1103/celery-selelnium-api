@@ -227,7 +227,3 @@ class ResearchResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResearchResult
         fields = "__all__"
-        extra_kwargs = {
-            "product_img2": {"required": False},
-            "product_img3": {"required": False},
-        }
