@@ -35,14 +35,7 @@ class Ngword(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="ngwords"
     )
 
-    row = models.PositiveIntegerField()
-
     value = models.CharField(max_length=255)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "row"], name="ngword_unique"),
-        ]
 
 
 class Exclusion(models.Model):
@@ -50,14 +43,7 @@ class Exclusion(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="exclusions"
     )
 
-    row = models.PositiveIntegerField()
-
     value = models.CharField(max_length=255)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "row"], name="exclusion_unique"),
-        ]
 
 
 class Replace(models.Model):
@@ -65,16 +51,9 @@ class Replace(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="replaces"
     )
 
-    row = models.PositiveIntegerField()
-
     before = models.CharField(max_length=255)
 
     after = models.CharField(max_length=255)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "row"], name="replace_unique"),
-        ]
 
 
 class Delete(models.Model):
@@ -82,14 +61,7 @@ class Delete(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="deletes"
     )
 
-    row = models.PositiveIntegerField()
-
     value = models.CharField(max_length=255)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "row"], name="delete_unique"),
-        ]
 
 
 class DefaultMargin(models.Model):

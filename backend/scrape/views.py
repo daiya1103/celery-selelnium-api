@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import HttpResponse
-from .tasks import merscraper
+from .tasks import merscraper, indivisual_scraper
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
@@ -28,7 +28,17 @@ class ScrapeView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data
         task = merscraper.apply_async(args=[data])
-        print(data)
+
+        response = {"message": "開始", "id": task.id}
+
+        return Response(response, status=status.HTTP_202_ACCEPTED)
+
+class IndivisualScrapeView(APIView):
+    authentication_classes = (JWTAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        task = indivisual_scraper.apply_async(args=[data])
 
         response = {"message": "開始", "id": task.id}
 

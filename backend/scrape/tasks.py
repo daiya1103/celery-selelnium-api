@@ -261,6 +261,7 @@ def get_item_data(
             print("\r", end="")
 
 
+
 @shared_task
 def merscraper(data):
     task_id = current_task.request.id
@@ -293,3 +294,136 @@ def merscraper(data):
     driver.quit()
 
     return True
+
+@shared_task
+def indivisual_scraper(data):
+    task_id = current_task.request.id
+    driver = setup_webdriver()
+    driver.implicitly_wait(5)
+    i = 0
+    print(data)
+    n=0
+
+    url_dict_list = data['url_dict_list']
+    exclusion_size = data['exclusion_size']
+    search_amount = len(url_dict_list)
+
+    for url_dict in url_dict_list:
+        site = url_dict['site']
+        url = url_dict['url']
+
+        if site == "メルカリ":
+            print("")
+            print(f"商品データ取得中…({n+1}/{search_amount})", end="")
+            driver.get(url)
+            sleep(1)
+
+            try:
+                product_name = driver.find_element(
+                    By.CSS_SELECTOR,
+                    "#item-info > section > div > .merHeading > div > h1",
+                ).text
+                if len(product_name) >= exclusion_size:
+                    seller_url = driver.find_element(
+                        By.CSS_SELECTOR, 'a[data-location="item_details:seller_info"]'
+                    ).get_attribute("href")
+                    seller_id = seller_url.split("/")[-1]
+                    product_price = int(
+                        driver.find_element(
+                            By.CSS_SELECTOR,
+                            'div[data-testid="price"] span:nth-of-type(2)',
+                        ).text.replace(",", "")
+                    )
+                    product_img = driver.find_element(
+                        By.CSS_SELECTOR,
+                        ".sticky-outer-wrapper img",
+                    ).get_attribute("src")
+                    sell_status_elm = driver.find_element(
+                        By.CSS_SELECTOR, "div[data-testid='image-0']"
+                    )
+                    sell_status = sell_status_elm.get_attribute("aria-label")
+                    if sell_status == "商品サムネイル":
+                        sell_status = "販売中"
+                    condition = driver.find_element(
+                        By.CSS_SELECTOR, "span[data-testid='商品の状態']"
+                    ).text
+                    data = {
+                        "product_img": product_img,
+                        "url": url,
+                        "product_name": product_name,
+                        "seller_id": seller_id,
+                        "product_price": product_price,
+                        "task_id": task_id,
+                        "sell_status": sell_status,
+                        "condition": condition,
+                    }
+                    serializer = ResearchResultSerializer(data=data)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        print(serializer.errors)
+                else:
+                    print(f"商品名:{product_name}")
+            except NoSuchElementException as e:
+                print(str(e))
+            print("\r", end="")
+
+        elif site == "ヤフオク":
+            print(f"商品データ取得中…({n+1}/{search_amount})", end="")
+            driver.get(url)
+            sleep(1)
+
+            try:
+                product_name = driver.find_element(
+                    By.CSS_SELECTOR,
+                    "h1.ProductTitle__text",
+                ).text
+                if len(product_name) >= exclusion_size:
+                    seller_url = driver.find_element(
+                        By.CSS_SELECTOR, "p.Seller__name a"
+                    ).get_attribute("href")
+                    seller_id = seller_url.split("/")[-1]
+                    price_tax = driver.find_element(
+                        By.CSS_SELECTOR,
+                        "dd.Price__value > span",
+                    ).text
+
+                    product_price = int(
+                        driver.find_element(
+                            By.CSS_SELECTOR,
+                            "dd.Price__value",
+                        )
+                        .text.replace(price_tax, "")
+                        .replace(",", "")
+                        .replace("円", "")
+                    )
+                    product_img = driver.find_element(
+                        By.CSS_SELECTOR,
+                        ".ProductImage__inner img",
+                    ).get_attribute("src")
+                    sell_status = "販売中"
+                    condition = driver.find_element(
+                        By.CSS_SELECTOR, "span.Count__detail > a"
+                    ).text
+                    data = {
+                        "product_img": product_img,
+                        "url": url,
+                        "product_name": product_name,
+                        "seller_id": seller_id,
+                        "product_price": product_price,
+                        "task_id": task_id,
+                        "sell_status": sell_status,
+                        "condition": condition,
+                    }
+                    serializer = ResearchResultSerializer(data=data)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        print(serializer.errors)
+                    print(data)
+                else:
+                    print(f"商品名:{product_name}", "リスト:{search_word_list}")
+            except NoSuchElementException as e:
+                print(str(e))
+            print("\r", end="")
+    driver.quit()
