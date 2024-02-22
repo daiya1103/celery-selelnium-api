@@ -20,6 +20,10 @@ from user.serializers import ResearchResultSerializer
 from celery.result import AsyncResult
 
 CUR_DIR = os.getcwd()
+P_IMG_CSS = 'div[data-testid="carousel"] img'
+P_NAME_CSS = "#item-info > section > div > .merHeading > div > h1"
+P_PRICE_CSS = 'div[data-testid="price"] span:nth-of-type(2)'
+SELLER_URL_CSS = 'a[data-location="item_details:seller_info"]'
 
 
 def setup_webdriver():
@@ -121,24 +125,24 @@ def get_item_data(
             try:
                 product_name = driver.find_element(
                     By.CSS_SELECTOR,
-                    "#item-info > section > div > .merHeading > div > h1",
+                    P_NAME_CSS,
                 ).text
                 if product_name_serializer(
                     product_name, exclusion, exclusion_size, search_word_list
                 ):
                     seller_url = driver.find_element(
-                        By.CSS_SELECTOR, 'a[data-location="item_details:seller_info"]'
+                        By.CSS_SELECTOR, SELLER_URL_CSS
                     ).get_attribute("href")
                     seller_id = seller_url.split("/")[-1]
                     product_price = int(
                         driver.find_element(
                             By.CSS_SELECTOR,
-                            'div[data-testid="price"] span:nth-of-type(2)',
+                            P_PRICE_CSS,
                         ).text.replace(",", "")
                     )
                     product_img = driver.find_element(
                         By.CSS_SELECTOR,
-                        ".sticky-outer-wrapper img",
+                        P_IMG_CSS
                     ).get_attribute("src")
                     sell_status_elm = driver.find_element(
                         By.CSS_SELECTOR, "div[data-testid='image-0']"
@@ -321,22 +325,22 @@ def indivisual_scraper(data):
             try:
                 product_name = driver.find_element(
                     By.CSS_SELECTOR,
-                    "#item-info > section > div > .merHeading > div > h1",
+                    P_NAME_CSS,
                 ).text
                 if len(product_name) >= exclusion_size:
                     seller_url = driver.find_element(
-                        By.CSS_SELECTOR, 'a[data-location="item_details:seller_info"]'
+                        By.CSS_SELECTOR, SELLER_URL_CSS
                     ).get_attribute("href")
                     seller_id = seller_url.split("/")[-1]
                     product_price = int(
                         driver.find_element(
                             By.CSS_SELECTOR,
-                            'div[data-testid="price"] span:nth-of-type(2)',
+                            P_PRICE_CSS,
                         ).text.replace(",", "")
                     )
                     product_img = driver.find_element(
                         By.CSS_SELECTOR,
-                        ".sticky-outer-wrapper img",
+                        P_IMG_CSS,
                     ).get_attribute("src")
                     sell_status_elm = driver.find_element(
                         By.CSS_SELECTOR, "div[data-testid='image-0']"
