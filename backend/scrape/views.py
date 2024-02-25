@@ -52,6 +52,7 @@ class ResearchResultListView(APIView):
         task_id = request.query_params.get("task_id", None)
         celery_task = AsyncResult(task_id)
         task_status = celery_task.status
+        print(task_status)
 
         queryset = []
         result_data = []

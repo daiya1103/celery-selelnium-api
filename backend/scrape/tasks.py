@@ -23,7 +23,7 @@ CUR_DIR = os.getcwd()
 P_IMG_CSS = 'div[data-testid="carousel"] img'
 P_NAME_CSS = "#item-info > section > div > .merHeading > div > h1"
 P_PRICE_CSS = 'div[data-testid="price"] span:nth-of-type(2)'
-SELLER_URL_CSS = 'a[data-location="item_details:seller_info"]'
+SELLER_URL_CSS = 'a[data-location="item_details:seller_inf"]'
 
 
 def setup_webdriver():
@@ -94,23 +94,16 @@ def get_item_data(
                 items = driver.find_elements(
                     By.CSS_SELECTOR, 'li[data-testid="item-cell"] > div > a'
                 )
-            except NoSuchElementException:
-                driver.refresh()
-                sleep(5)
-                for t in range(window_ratio):
-                    driver.execute_script(f"window.scrollBy(0, {clientHeight})")
-                    sleep(0.1)
-                items = driver.find_elements(
-                    By.CSS_SELECTOR, 'li[data-testid="item-cell"] > div > a'
-                )
+            except Exception as e:
+                pass
+                # raise e
 
             for item in items:
                 try:
                     item_url = item.get_attribute("href")
-                except NoSuchElementException:
-                    driver.refresh()
-                    sleep(5)
-                    item_url = item.get_attribute("href")
+                except Exception as e:
+                    pass
+                    # raise e
                 url_list.append(item_url)
 
             i += 1
@@ -123,6 +116,7 @@ def get_item_data(
             sleep(1)
 
             try:
+                print('a')
                 product_name = driver.find_element(
                     By.CSS_SELECTOR,
                     P_NAME_CSS,
@@ -170,8 +164,9 @@ def get_item_data(
                         print(serializer.errors)
                 else:
                     print(f"商品名:{product_name}", "リスト:{search_word_list}")
-            except NoSuchElementException as e:
-                print(str(e))
+            except Exception as e:
+                pass
+                # raise e
             print("\r", end="")
 
     elif site == "ヤフオク":
@@ -182,22 +177,18 @@ def get_item_data(
             sleep(1)
             try:
                 items = driver.find_elements(By.CSS_SELECTOR, ".Product__detail")
-            except NoSuchElementException:
-                driver.refresh()
-                sleep(5)
-                items = driver.find_elements(By.CSS_SELECTOR, ".Product__detail")
+            except Exception as e:
+                pass
+                # raise e
 
             for item in items:
                 try:
                     item_url = item.find_element(
                         By.CSS_SELECTOR, "a.Product__titleLink"
                     ).get_attribute("href")
-                except NoSuchElementException:
-                    driver.refresh()
-                    sleep(5)
-                    item_url = item.find_element(
-                        By.CSS_SELECTOR, "a.Product__titleLink"
-                    ).get_attribute("href")
+                except Exception as e:
+                    pass
+                    # raise e
                 url_list.append(item_url)
 
             i += 1
@@ -260,13 +251,14 @@ def get_item_data(
                     print(data)
                 else:
                     print(f"商品名:{product_name}", "リスト:{search_word_list}")
-            except NoSuchElementException as e:
-                print(str(e))
+            except Exception as e:
+                pass
+                # raise e
             print("\r", end="")
 
 
 
-@shared_task
+@shared_task(ignore_result=False)
 def merscraper(data):
     task_id = current_task.request.id
     driver = setup_webdriver()
@@ -305,7 +297,6 @@ def indivisual_scraper(data):
     driver = setup_webdriver()
     driver.implicitly_wait(5)
     i = 0
-    print(data)
     n=0
 
     url_dict_list = data['url_dict_list']
@@ -368,8 +359,9 @@ def indivisual_scraper(data):
                         print(serializer.errors)
                 else:
                     print(f"商品名:{product_name}")
-            except NoSuchElementException as e:
-                print(str(e))
+            except Exception as e:
+                pass
+                # raise e
             print("\r", end="")
 
         elif site == "ヤフオク":
@@ -424,10 +416,10 @@ def indivisual_scraper(data):
                         serializer.save()
                     else:
                         print(serializer.errors)
-                    print(data)
                 else:
                     print(f"商品名:{product_name}", "リスト:{search_word_list}")
-            except NoSuchElementException as e:
-                print(str(e))
+            except Exception as e:
+                pass
+                # raise e
             print("\r", end="")
     driver.quit()
