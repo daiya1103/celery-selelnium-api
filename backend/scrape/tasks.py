@@ -23,7 +23,7 @@ CUR_DIR = os.getcwd()
 P_IMG_CSS = 'div[data-testid="carousel"] img'
 P_NAME_CSS = "#item-info > section > div > .merHeading > div > h1"
 P_PRICE_CSS = 'div[data-testid="price"] span:nth-of-type(2)'
-SELLER_URL_CSS = 'a[data-location="item_details:seller_inf"]'
+SELLER_URL_CSS = 'a[data-location="item_details:seller_info"]'
 
 
 def setup_webdriver():
@@ -76,6 +76,10 @@ def get_item_data(
     search_word_list,
     url,
 ):
+    err_m = 0
+    err_y = 0
+    err_r = 0
+    err_p = 0
     url_list = []
     i = 0
 
@@ -95,15 +99,15 @@ def get_item_data(
                     By.CSS_SELECTOR, 'li[data-testid="item-cell"] > div > a'
                 )
             except Exception as e:
-                pass
-                # raise e
+                # pass
+                raise e
 
             for item in items:
                 try:
                     item_url = item.get_attribute("href")
                 except Exception as e:
-                    pass
-                    # raise e
+                    # pass
+                    raise e
                 url_list.append(item_url)
 
             i += 1
@@ -116,7 +120,6 @@ def get_item_data(
             sleep(1)
 
             try:
-                print('a')
                 product_name = driver.find_element(
                     By.CSS_SELECTOR,
                     P_NAME_CSS,
@@ -160,13 +163,15 @@ def get_item_data(
                     serializer = ResearchResultSerializer(data=data)
                     if serializer.is_valid():
                         serializer.save()
+                        err_m = 0
                     else:
                         print(serializer.errors)
                 else:
                     print(f"商品名:{product_name}", "リスト:{search_word_list}")
             except Exception as e:
-                pass
-                # raise e
+                err_m += 1
+                if err_m == 5:
+                    raise e
             print("\r", end="")
 
     elif site == "ヤフオク":
@@ -178,8 +183,7 @@ def get_item_data(
             try:
                 items = driver.find_elements(By.CSS_SELECTOR, ".Product__detail")
             except Exception as e:
-                pass
-                # raise e
+                raise e
 
             for item in items:
                 try:
@@ -187,8 +191,7 @@ def get_item_data(
                         By.CSS_SELECTOR, "a.Product__titleLink"
                     ).get_attribute("href")
                 except Exception as e:
-                    pass
-                    # raise e
+                    raise e
                 url_list.append(item_url)
 
             i += 1
@@ -246,14 +249,15 @@ def get_item_data(
                     serializer = ResearchResultSerializer(data=data)
                     if serializer.is_valid():
                         serializer.save()
+                        err_y = 0
                     else:
                         print(serializer.errors)
-                    print(data)
                 else:
                     print(f"商品名:{product_name}", "リスト:{search_word_list}")
             except Exception as e:
-                pass
-                # raise e
+                err_y += 1
+                if err_y == 5:
+                    raise e
             print("\r", end="")
 
 
