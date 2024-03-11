@@ -260,6 +260,97 @@ def get_item_data(
                     raise e
             print("\r", end="")
 
+    elif site == "ラクマ":
+        while len(url_list) < search_amount:
+            search_url = f"{url}&page={i + 1}"
+            driver.get(search_url)
+            print(search_url)
+            sleep(1)
+            try:
+                items = driver.find_elements(By.CSS_SELECTOR, ".item")
+            except Exception as e:
+                raise e
+
+            for item in items:
+                try:
+                    item_url = item.find_element(
+                        By.CSS_SELECTOR, "a.link_search_title"
+                    ).get_attribute("href")
+                except Exception as e:
+                    raise e
+                url_list.append(item_url)
+            i += 1
+
+        print("")
+        for n, url in enumerate(url_list[:search_amount]):
+            print(f"商品データ取得中…({n+1}/{search_amount})", end="")
+            driver.get(url)
+            sleep(1)
+
+            try:
+                product_name = driver.find_element(
+                    By.CSS_SELECTOR,
+                    "h1.item__name",
+                ).tex139
+                if product_name_serializer(
+                    product_name, exclusion, exclusion_size, search_word_list
+                ):
+                    seller_url = driver.find_element(
+                        By.CSS_SELECTOR, "a.shopinfo-wrap"
+                    ).get_attribute("href")
+                    seller_id = seller_url.split("/")[-1]
+
+                    product_price = int(
+                        driver.find_element(
+                            By.CSS_SELECTOR,
+                            "span.item__price",
+                        )
+                        .text
+                        .replace(",", "")
+                        .replace("¥", "")
+                    )
+                    product_img = driver.find_element(
+                        By.CSS_SELECTOR,
+                        "img.sp-image",
+                    ).get_attribute("src")
+                    sell_status_len = len(driver.find_elements(
+                        By.CSS_SELECTOR,
+                        "#photoFrame > .photo-box__soldout_ribbon",
+                    ))
+                    if sell_status_len > 0:
+                        sell_status='売り切れ'
+                    else:
+                        sell_status = "販売中"
+                    conditions = driver.find_elements(
+                        By.CSS_SELECTOR, "table[class='item__details'] > tbody > tr:nth-of-type(4) > td"
+                    )
+                    if len(conditions) > 0:
+                        condition = conditions[0].text
+                    else: condition = '不明'
+                    data = {
+                        "product_img": product_img,
+                        "url": url,
+                        "product_name": product_name,
+                        "seller_id": seller_id,
+                        "product_price": product_price,
+                        "task_id": task_id,
+                        "sell_status": sell_status,
+                        "condition": condition,
+                    }
+                    serializer = ResearchResultSerializer(data=data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        err_y = 0
+                    else:
+                        print(serializer.errors)
+                else:
+                    print(f"商品名:{product_name}", "リスト:{search_word_list}")
+            except Exception as e:
+                err_r += 1
+                if err_r == 5:
+                    raise e
+            print("\r", end="")
+
 
 
 @shared_task(ignore_result=False)

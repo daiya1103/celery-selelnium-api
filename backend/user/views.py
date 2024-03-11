@@ -164,6 +164,34 @@ class YahooViewSet(ModelViewSet):
         response = {"message": "設定は削除できません"}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
+class RakumaViewSet(ModelViewSet):
+    serializer_class = RakumaSerializer
+    queryset = Rakuma.objects.all()
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Rakuma.objects.filter(user=user)
+
+    def destroy(self, request, *args, **kwargs):
+        response = {"message": "設定は削除できません"}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+class PayPayViewSet(ModelViewSet):
+    serializer_class = PaypaySerializer
+    queryset = Paypay.objects.all()
+    permission_classes = (UserPermission,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Paypay.objects.filter(user=user)
+
+    def destroy(self, request, *args, **kwargs):
+        response = {"message": "設定は削除できません"}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
 
 class NgSettingView(APIView):
     permission_classes = (UserPermission,)

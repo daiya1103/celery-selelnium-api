@@ -199,6 +199,8 @@ class MainInfomationSerializer(WritableNestedModelSerializer):
     amazon = AmazonSerializer()
     mercari = MercariSerializer()
     yahoo = YahooSerializer()
+    rakuma = RakumaSerializer()
+    paypay = PaypaySerializer()
     recipes = RecipeSerializer(many=True)
     common = CommonSettingSerializer()
 
@@ -213,6 +215,8 @@ class MainInfomationSerializer(WritableNestedModelSerializer):
             "margin",
             "amazon",
             "mercari",
+            'rakuma',
+            'paypay',
             "recipes",
             "common",
             "yahoo",
